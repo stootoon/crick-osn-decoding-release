@@ -87,7 +87,7 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     ind_glom = sorted(np.random.permutation(n_glom)[:config.n_sub])
     logger.debug(f"Picked {config.n_sub=}/{n_glom=} glomeruli: {ind_glom=}")
 
-    X = Xrgt[:,ind_glom, :]
+    X_sub = np.copy(Xrgt[:,ind_glom, :])
     
     t = np.arange(0, n_time) * dt
     
@@ -107,7 +107,7 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     
     logger.debug(f"Picked time indices {ind_t[0]} ({t[ind_t[0]]:1.3f} sec.) to {ind_t[-1]} ({t[ind_t[-1]]:1.3f} sec.) to span [{config.start_time=}, {end_time=}).")
 
-    X = np.mean(X[:, :, ind_t],axis=-1)    
+    X = np.mean(X_sub[:, :, ind_t],axis=-1)    
     logger.debug(f"Shape of predictors: {X.shape=}")
 
     y = []
@@ -118,7 +118,7 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
         y = np.random.permutation(y)
     logger.debug(f"Labels: {list(y)}")
 
-    return (X, y) if not return_full else (X, y, t, ind_glom)
+    return (X, y) if not return_full else (X, y, t, X_sub, ind_glom)
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
