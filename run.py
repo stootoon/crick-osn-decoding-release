@@ -48,16 +48,17 @@ def run_single(config, search, mock = "null", score_function = default_score_fun
     
     return np.mean(train_scores), np.mean(test_scores)
 
-def get_output_folder_name(args):
+def get_output_folder_name(args, head = None):
     raw           = args["raw"]           if type(args) is dict else args.raw
     mock          = args["mock"]          if type(args) is dict else args.mock
     classifier    = args["classifier"]    if type(args) is dict else args.classifier
-    input_file    = args["input_file"]    if type(args) is dict else args.input_file    
 
-    head, _ = os.path.split(input_file)
-    if not head.endswith("inputs"):
-        raise ValueError(f"Input file base directory {head=} path must be 'inputs'")
-    head, _ = os.path.split(head) # Split again to get the parent of inputs
+    if head is None:
+        input_file    = args["input_file"]    if type(args) is dict else args.input_file    
+        head, _ = os.path.split(input_file)
+        if not head.endswith("inputs"):
+            raise ValueError(f"Input file base directory {head=} path must be 'inputs'")
+        head, _ = os.path.split(head) # Split again to get the parent of inputs
 
     folder = ""
     if raw:
