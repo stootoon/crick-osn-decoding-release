@@ -35,13 +35,19 @@ def run_single(config, search, mock = "null", score_function = default_score_fun
     X, y = inputs.generate_input_for_config(config)
 
     print(f"Running with {config}.")    
-
+    np.random.seed(config.seed)
+    
     X = mock_predictors(X, mock)    
 
     train_scores, test_scores = [], []
     for itrn, itst in StratifiedShuffleSplit().split(X,y):
-        X_trn, y_trn = X[itrn], y[itrn]
-        X_tst, y_tst = X[itst], y[itst]
+        X_trn, y_trn = X[itrn], np.copy(y[itrn])
+        X_tst, y_tst = X[itst], np.copy(y[itst])
+
+        if config.shuf:
+            y_trn = np.random.permutation(y_trn)
+            y_tst = np.random.permutation(y_tst)
+
         search.fit(X_trn, y_trn)            
         train_scores.append(score_function(search)(X_trn, y_trn))
         test_scores.append(score_function(search)(X_tst, y_tst))
@@ -126,7 +132,8 @@ if __name__ == "__main__":
     for index, conf in confs.iterrows():
         print(f"*"*120)
         train_score, test_score = run_single(conf, search, mock = args.mock, score_function=score_function)
-        print(f"{train_score=}, {test_score=}")
+        print(f"{train_score=:1.3f}")
+        print(f" {test_score=:1.3f}")
         new_record = conf.to_dict()
         new_record.update({"train_score":train_score, "test_score":test_score})
         records.append(new_record)

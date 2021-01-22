@@ -113,9 +113,6 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     y = []
     [logger.debug((y.append([-1 if "anti-corr" in stim else 1] * n_whisker), f"({stim=}, {pair=}) -> {y[-1]}")[1]) for stim in stims[config.freq] for pair in pairs]    
     y = np.array(y).flatten()
-    if config.shuf:
-        logger.debug(f"Shuffling labels.")
-        y = np.random.permutation(y)
     logger.debug(f"Labels: {list(y)}")
 
     return (X, y) if not return_full else (X, y, t, X_sub, ind_glom)
