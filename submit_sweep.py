@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument("--hashonly",    help="Whether to just compute the hashes.", action="store_true")
     args = parser.parse_args()
     
-    to_hash, hashed = hasher(args.folder, args.classifier)
+    hashed, to_hash = hasher(args.folder, args.classifier)
     print(f"{to_hash} -> {hashed}")
     if args.hashonly:
         exit(0)
