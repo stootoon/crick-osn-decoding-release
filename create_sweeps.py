@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser(description="Generate json files for various sweeps.")
 parser.add_argument("base_name", type=str, help="The base name to use for the sweeps.")
 parser.add_argument("--nseeds", type=int, default=100, help="Number of seeds to use.")
+parser.add_argument("--firstseed", type=int, default=0, help="First seed value.")
 parser.add_argument("--pairs", type=str, default="AB,CD,EF", help="Comma separted list of which pairs to use.")
 parser.add_argument("--window_size", type=str, default="2", help="Comma separated list of which window sizes to use.")
 parser.add_argument("--whiskers", type=str, default="yes",help="Comma separated list of which whiskers to use.")
@@ -33,6 +34,7 @@ for pairs in args.pairs.split(","):
         for whiskers in args.whiskers.split(","):            
             sweep = dict(template)
             sweep["n_seeds"]     = args.nseeds
+            sweep["first_seed"]  = args.firstseed
             sweep["pairs"]       = [pairs]
             sweep["window_size"] = [wnd]
             sweep["whiskers"]    = [whiskers]
