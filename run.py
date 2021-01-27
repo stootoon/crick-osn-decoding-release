@@ -9,11 +9,7 @@ import logging
 import time
 
 import inputs
-from classifiers import classifiers
-
-default_score_function = lambda search: search.score
-def regression_prediction_to_score(search):
-    return lambda X, y: np.mean(np.sign(search.predict(X) + np.random.randn(*y.shape)*1e-8).astype(int) == np.sign(y).astype(int))
+from classifiers import classifiers, score_function
 
 def mock_predictors(X, mock="null"):
     if mock == "null":
@@ -31,7 +27,7 @@ def mock_predictors(X, mock="null"):
         raise ValueError(f"Don't know what to do for {mock=}")
     return X
     
-def run_single(config, search, mock = "null", score_function = default_score_function):
+def run_single(config, search, score_function, mock = "null"):
     X, y = inputs.generate_input_for_config(config)
 
     print(f"Running with {config}.")    
@@ -77,7 +73,7 @@ def get_output_folder_name(args, head = None):
     folder = os.path.join(head, folder)
     return folder
 
-def get_pipeline(classifier=None, raw=False, return_pipe = False, verbose = False, **kwargs):
+def get_pipeline(classifier, raw=False, return_pipe = False, verbose = False, **kwargs):
     clf        = classifiers[classifier].classifier()
     params     = classifiers[classifier].parameters
     
@@ -122,8 +118,6 @@ if __name__ == "__main__":
     print(f"Read {n_confs} configurations from {args.input_file}.")
     
     search         = get_pipeline(classifier = args.classifier, raw = args.raw, verbose = True)
-    is_regression  = classifiers[args.classifier].is_regression
-    score_function = default_score_function if not is_regression else regression_prediction_to_score
 
     records = []
     done    = 0
@@ -131,7 +125,7 @@ if __name__ == "__main__":
     logging.getLogger("inputs").setLevel(logging.DEBUG)
     for index, conf in confs.iterrows():
         print(f"*"*120)
-        train_score, test_score = run_single(conf, search, mock = args.mock, score_function=score_function)
+        train_score, test_score = run_single(conf, search, score_function[args.classifier], mock = args.mock)
         print(f"{train_score=:1.3f}")
         print(f" {test_score=:1.3f}")
         new_record = conf.to_dict()

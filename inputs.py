@@ -122,6 +122,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("sweep_file", help="JSON file containing the sweep parameters.", type = str)
     parser.add_argument("n_jobs",     help="Number of jobs to create.",                  type = int)
+    parser.add_argument("--startat",  help="ID of the first input csv.", default = 0,    type = int)    
     args = parser.parse_args()
 
     if not os.path.exists(args.sweep_file):
@@ -138,7 +139,9 @@ if __name__ == "__main__":
     print(f"{sweep=}")
     
     if "n_seeds" in sweep:
-        sweep["seed"] = list(range(sweep["n_seeds"]))
+        first_seed = sweep["first_seed"] if "first_seed" in sweep else 0
+        sweep["seed"] = list(range(first_seed, first_seed+sweep["n_seeds"]))
+        print(f"Sweeping for seeds {sweep['seed'][0]} - {sweep['seed'][-1]}.")
         
     missing_fields = [fld for fld in Config._fields if fld not in sweep]
     if len(missing_fields):
@@ -162,7 +165,7 @@ if __name__ == "__main__":
     
     for i, istart in enumerate(range(0,n_confs, n_confs_per_job)):
         df = pd.DataFrame(confs[istart:istart+n_confs_per_job], columns=fields)
-        output_file = os.path.join(folder, f"input{i:03d}.csv")
+        output_file = os.path.join(folder, f"input{i + args.startat:03d}.csv")
         df.to_csv(output_file, index=False)
 
     print(f"Wrote {i+1} input files to {folder=}")
