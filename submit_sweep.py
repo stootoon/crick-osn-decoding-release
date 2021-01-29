@@ -15,6 +15,7 @@ if __name__ == "__main__":
     parser.add_argument("--submit",      help="Whether to submit the jobs.", action="store_true")
     parser.add_argument("--hashonly",    help="Whether to just compute the hashes.", action="store_true")
     parser.add_argument("--missingonly", help="Whether to only run inputs for which the outputs are missing.", action="store_true")
+    parser.add_argument("--max",         type = int, default = 100000, help="Maximum number of seeds to run.")
     args = parser.parse_args()
     print(f"Running with {args=}")
     
@@ -40,15 +41,18 @@ if __name__ == "__main__":
 
     print(f"Missingonly={args.missingonly}")
 
+    print(f"Running up to {args.max} inputs.")    
     inputs_already_run = [r.replace("output", "input") for r in output_files]
     inputs_to_run = list(set(input_files) - set(inputs_already_run)) if args.missingonly else input_files
-    print(f"Running for {len(inputs_to_run)} inputs.")
-    if len(inputs_to_run)<10:
-        print(inputs_to_run[:10])
+    print(f"{len(inputs_to_run)} available inputs to run.")
+    inputs_to_run_subset = inputs_to_run[:args.max]
+    print(f"{len(inputs_to_run_subset)} to be run after limiting to first {args.max} inputs.")
+    if len(inputs_to_run_subset)<10:
+        print(inputs_to_run_subset[:10])
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
     submit_flag = "--submit" if args.submit else ""
-    for input_file in inputs_to_run:
+    for input_file in inputs_to_run_subset:
         input_id = input_file.replace("input","").replace(".csv","")
         job_name = f"{prefix}{'_'*(4-len(input_id))}{input_id}"
         cmd = f"python $CFDGITPY/cmd2job.py 'python -u {base_dir}/run.py {args.folder}/inputs/{input_file} {args.classifier}' --jobname {job_name} --jobmem 16G {submit_flag}"
