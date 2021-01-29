@@ -115,7 +115,7 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     y = np.array(y).flatten()
     logger.debug(f"Labels: {list(y)}")
 
-    return (X, y) if not return_full else (X, y, t, X_sub, ind_glom)
+    return (X, y) if not return_full else (X, y, t, X_sub, ind_glom, ind_t)
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
