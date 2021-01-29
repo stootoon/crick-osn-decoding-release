@@ -5,8 +5,11 @@ from sklearn.model_selection import StratifiedShuffleSplit, GridSearchCV
 from sklearn.pipeline import Pipeline
 import numpy as np
 import pandas as pd
-import logging
 import time
+
+import logging
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 import inputs
 from classifiers import classifiers, score_function
@@ -15,13 +18,13 @@ def mock_predictors(X, mock="null"):
     if mock == "null":
         pass
     elif mock == "full_rand":
-        print("Mocking data as IID standard normals.")
+        logger.info("Mocking data as IID standard normals.")
         X = np.random.randn(*X.shape)
     elif mock == "shuf_cols":
-        print("Mocking data by shuffling the columns.")
+        logger.info("Mocking data by shuffling the columns.")
         X = np.array([np.random.permutation(Xi) for Xi in X.T]).T
     elif mock == "rand_cols":
-        print("Mocking data by generating columns with same mean and sd.")
+        logger.info("Mocking data by generating columns with same mean and sd.")
         X = np.array([np.random.randn(*Xi.shape) * np.std(Xi) + np.mean(Xi) for Xi in X.T]).T
     else:
         raise ValueError(f"Don't know what to do for {mock=}")
@@ -30,13 +33,13 @@ def mock_predictors(X, mock="null"):
 def run_single(config, search, score_function, mock = "null"):
     X, y = inputs.generate_input_for_config(config)
 
-    print(f"Running with {config}.")    
+    logger.info(f"Running with {config}.")    
     np.random.seed(config.seed)
     
     X = mock_predictors(X, mock)    
 
     train_scores, test_scores = [], []
-    for itrn, itst in StratifiedShuffleSplit().split(X,y):
+    for i, (itrn, itst) in enumerate(StratifiedShuffleSplit(random_state = config.seed).split(X,y)):
         X_trn, y_trn = X[itrn], np.copy(y[itrn])
         X_tst, y_tst = X[itst], np.copy(y[itst])
 
@@ -47,8 +50,17 @@ def run_single(config, search, score_function, mock = "null"):
         search.fit(X_trn, y_trn)            
         train_scores.append(score_function(search)(X_trn, y_trn))
         test_scores.append(score_function(search)(X_tst, y_tst))
+        logger.info(f"Split {i:>2d}: TRAINING ({sum(y_trn>0):2d}/{len(y_trn):<2d} trials are +1) {train_scores[-1]:1.3f}\tTEST ({sum(y_tst>0):>2d}/{len(y_tst):<2d} trials are +1) {test_scores[-1]:1.3f}")        
+
+    mean_train = np.mean(train_scores)
+    mean_test  = np.mean(test_scores)
+    std_train  = np.std(train_scores)
+    std_test   = np.std(test_scores)
     
-    return np.mean(train_scores), np.mean(test_scores)
+    logger.info(f"Train {mean_train:1.3f} +/- {std_train:1.3f}")
+    logger.info(f" Test {mean_test:1.3f} +/- {std_test:1.3f}")    
+
+    return mean_train, mean_test
 
 def get_output_folder_name(args, head = None):
     raw           = args["raw"]           if type(args) is dict else args.raw
@@ -73,20 +85,20 @@ def get_output_folder_name(args, head = None):
     folder = os.path.join(head, folder)
     return folder
 
-def get_pipeline(classifier, raw=False, return_pipe = False, verbose = False, **kwargs):
-    clf        = classifiers[classifier].classifier()
+def get_pipeline(classifier, raw=False, return_pipe = False, verbose = False, seed=0, **kwargs):
+    clf        = classifiers[classifier].classifier(**({"random_state":seed} if "svc" in classifier else {}))
     params     = classifiers[classifier].parameters
     
     steps = [] if raw else [('scaler', StandardScaler())]
     steps += [('clf', clf)]
 
     if verbose:
-        print(f"Pipeline {steps=}")
+        logger.info(f"Pipeline {steps=}")
     pipe = Pipeline(steps = steps)
 
     param_grid = {('clf__'+fld):vals for fld,vals in params.items()}
     if verbose:
-        print(f"{param_grid=}")
+        logger.info(f"{param_grid=}")
 
     search = GridSearchCV(pipe, param_grid, n_jobs=-1)
     return (search, pipe) if return_pipe else search
