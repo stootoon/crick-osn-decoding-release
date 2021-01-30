@@ -33,6 +33,10 @@ def mock_predictors(X, mock="null"):
 def run_single(config, search, score_function, mock = "null", response_threshold = 0, min_resp_trials = 0):
     logger.info(f"Running with {config}.")
 
+    if config.n_sub == 0:
+        logger.info("{config.nsub=0} so skipping.")
+        return np.nan, np.nan
+    
     X, y = inputs.generate_input_for_config(config, response_threshold=response_threshold, min_resp_trials=min_resp_trials)
     if len(X) == 0:
         logger.warning("No predictors found.")
@@ -141,7 +145,7 @@ if __name__ == "__main__":
     logging.getLogger("inputs").setLevel(logging.DEBUG)
     for index, conf in confs.iterrows():
         print(f"*"*120)
-        train_score, test_score = run_single(conf, search, score_function[args.classifier], mock = args.mock)
+        train_score, test_score = run_single(conf, search, score_function[args.classifier], mock = args.mock, response_threshold = conf.response_threshold, min_resp_trials = conf.min_resp_trials)
         print(f"{train_score=:1.3f}")
         print(f" {test_score=:1.3f}")
         new_record = conf.to_dict()
