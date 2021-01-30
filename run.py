@@ -30,10 +30,14 @@ def mock_predictors(X, mock="null"):
         raise ValueError(f"Don't know what to do for {mock=}")
     return X
     
-def run_single(config, search, score_function, mock = "null"):
-    X, y = inputs.generate_input_for_config(config)
+def run_single(config, search, score_function, mock = "null", response_threshold = 0, min_resp_trials = 0):
+    logger.info(f"Running with {config}.")
 
-    logger.info(f"Running with {config}.")    
+    X, y = inputs.generate_input_for_config(config, response_threshold=response_threshold, min_resp_trials=min_resp_trials)
+    if len(X) == 0:
+        logger.warning("No predictors found.")
+        return np.nan, np.nan
+    
     np.random.seed(config.seed)
     
     X = mock_predictors(X, mock)    
