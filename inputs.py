@@ -178,6 +178,10 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
 
     return (X, y) if not return_full else (X, y, t, X_sub, ind_glom, ind_t)
 
+def compute_gloms_available_for_config(config, **kwargs):
+    X = generate_input_for_config(config, **kwargs)[0]
+    return X.shape[1] if len(X) else 0        
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
@@ -214,18 +218,45 @@ if __name__ == "__main__":
     confs  = list(product(*[sweep[fld] for fld in fields]))
     n_confs= len(confs)
     
-    print(f"{n_confs} configurations in sweep.")
+    print(f"{n_confs} configurations in sweep before filtering.")
+    # Each config specifies an n_sub, the desired number of glomeruli to use.
+    # But after filtering, we get n_sub_avail.
+    # We shouldn't run a config again if its parameters match a previously run one
+    # and both have the same n_sub_avail.
+    confs_map    = {}
+    confs_to_run = []
+    gloms_avail  = {}
+    
+    for conf_item in confs:
+        conf = Config(**{fld:conf_item[i] for i,fld in enumerate(fields)})
+        if conf not in confs_map:
+            key = (conf.n_sub, conf.pairs, conf.whiskers, conf.window_size, conf.start_time)
+            if key not in gloms_avail:
+                gloms_avail[key] = compute_gloms_available_for_config(conf,
+                                             response_threshold = sweep["response_threshold"],
+                                             min_resp_trials    = sweep["min_resp_trials"],
+                                             return_full = False)
+            n_glom_avail    = gloms_avail[key]
+            confs_map[conf] = conf._replace(n_sub = n_glom_avail)
+        if confs_map[conf] not in confs_to_run:
+            confs_to_run.append(confs_map[conf])
+            print(f"{conf} maps to {confs_map[conf]}, which will be added to the run list.")            
+        else:
+            print(f"{conf} maps to {confs_map[conf]}, which is already in the run list.")
 
+    n_confs_to_run = len(confs_to_run)
+    print(f"{n_confs_to_run}/{n_confs} to be run.")
+    
     folder, json_file = os.path.split(os.path.abspath(args.sweep_file))
     folder = os.path.join(folder, json_file[:-5], "inputs")
     print(f"Writing to {folder=}")
     os.makedirs(folder, exist_ok = True)
     
-    n_confs_per_job = len(confs) // args.n_jobs
+    n_confs_per_job = n_confs_to_run // args.n_jobs
     print(f"{n_confs_per_job=}")
     
-    for i, istart in enumerate(range(0,n_confs, n_confs_per_job)):
-        df = pd.DataFrame(confs[istart:istart+n_confs_per_job], columns=fields)
+    for i, istart in enumerate(range(0,n_confs_to_run, n_confs_per_job)):
+        df = pd.DataFrame(confs_to_run[istart:istart+n_confs_per_job], columns=fields)
         output_file = os.path.join(folder, f"input{i + args.startat:03d}.csv")
         df.to_csv(output_file, index=False)
 
