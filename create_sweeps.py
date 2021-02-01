@@ -13,6 +13,7 @@ parser.add_argument("--template", type=str, default="template_sweep.json",help="
 parser.add_argument("--tfirst", type=float, default=0, help="Start of the first window.")
 parser.add_argument("--tlast", type=float, default=10, help="Start of the last window.")
 parser.add_argument("--tstepmin", type=float, default=0.5, help="Minimum window step size.")
+parser.add_argument("--tstep", type=float, default=-1, help="Set positive to directly specify a stepsize.")
 parser.add_argument("--response_threshold", type=float, default=0, help="Response threshold for filtering glomeruli.")
 parser.add_argument("--min_resp_trials",    type=float, default=0, help="Minimum responsive trials for filtering glomeruli.")
 args = parser.parse_args()
@@ -45,7 +46,7 @@ if args.min_resp_trials:
 for pairs in args.pairs.split(","):
     for window_size in args.window_size.split(","):
         wnd   = float(window_size)
-        tstep = max(args.tstepmin, wnd/2)
+        tstep = args.tstep if (args.tstep > 0) else max(args.tstepmin, wnd/2)
         for whiskers in args.whiskers.split(","):            
             sweep = dict(template)
             sweep["response_threshold"] = args.response_threshold
@@ -57,6 +58,9 @@ for pairs in args.pairs.split(","):
             sweep["whiskers"]    = [whiskers]
             sweep["start_time"] = list(np.arange(args.tfirst, args.tlast, tstep))
             suffix = "_".join([str(args.nseeds) + "x", pairs, f"{int(wnd*1000)}ms", f"W{whiskers}"])
+            if args.tstep > 0:
+                suffix += f"_dt{args.tstep}"
+
             name   = args.base_name + "_" + suffix + resp_filtering_suffix
 
             file_name = os.path.join(sweeps_dir, f"{name}.json")
