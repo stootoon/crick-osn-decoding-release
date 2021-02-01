@@ -233,7 +233,7 @@ if __name__ == "__main__":
         conf = Config(**{fld:conf_item[i] for i,fld in enumerate(fields)})
         all_confs.append(conf)
         if conf_item not in confs_map:
-            key = (conf.n_sub, conf.pairs, conf.whiskers, conf.window_size, conf.start_time)
+            key = (conf.n_sub, conf.pairs, conf.freq, conf.whiskers, conf.window_size, conf.start_time)
             if key not in gloms_avail:
                 gloms_avail[key] = compute_gloms_available_for_config(conf,
                                              response_threshold = sweep["response_threshold"],
