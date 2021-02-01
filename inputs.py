@@ -129,22 +129,13 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     n_whisker = (lambda x: x.stop - x.start)(whisker_slice[config.whiskers])
 
     t = np.arange(0, n_time) * dt
-    
-    end_time = config.start_time + config.window_size
-    ind_t    = np.where((t>=config.start_time) & (t<end_time))[0]
-    if not len(ind_t):
-        if config.window_size > dt:
-            raise ValueError(f"Window size {config.window_size} > {dt=} but no time bins found within [{config.start_time=}, {end_time=}).")
-        else:
-            logger.warning(f"No time bins found within [{config.start_time}, {end_time}). Using the first bin at or past {config.start_time}.")
-            # Try just finding a window that's at or past the start time
-            ind_t = np.where((t>=config.start_time))[0]
-            if len(ind_t):
-                ind_t = ind_t[0:1] # 0:1 to keep it an array
-            else:
-                raise ValueError(f"Couldn't find a single time bin starting at or after {config.start_time}.")
-    
-    logger.debug(f"Picked time indices {ind_t[0]} ({t[ind_t[0]]:1.3f} sec.) to {ind_t[-1]} ({t[ind_t[-1]]:1.3f} sec.) to span [{config.start_time=}, {end_time=}).")
+
+    n_bins_per_window = int(np.ceil(config.window_size / dt))
+    logger.debug(f"Using {n_bins_per_window} bins to approximate a desired window size of {config.window_size:1.3f} with {dt=:1.3f}.")
+    first_bin= np.where(t>=config.start_time)[0][0]
+    last_bin = first_bin + n_bins_per_window - 1
+    ind_t    = np.arange(first_bin, last_bin + 1).astype(int)
+    logger.debug(f"Picked time indices {ind_t[0]} ({t[ind_t[0]]:1.3f} sec.) to {ind_t[-1]} ({t[ind_t[-1]]:1.3f} sec.) to approximately span a {config.window_size=:1.3f} second window starting at {config.start_time=:1.3f} seconds.")
 
     # Filter glomeruli by responsivity
     logger.debug(f"Filtering glomeruli by responsivity using {response_threshold=} and {min_resp_trials=}.")
