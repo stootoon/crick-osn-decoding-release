@@ -1,9 +1,0 @@
-svc_linear
-svc_linear_no_intercept
-svc_linear_l1
-svc_linear_l1_no_intercept
-svc_poly
-svc_rbf
-svc_sigmoid
-lasso_lars
-lasso_lars_no_intercept
