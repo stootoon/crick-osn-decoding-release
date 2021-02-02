@@ -1,0 +1,10 @@
+{
+    "n_seeds": 100,
+    "n_sub": [145],
+    "shuf": [0,1],
+    "freq": [2,20],
+    "pairs": ["ABCDEF"],
+    "whiskers": ["yes"],
+    "window_size": [2],
+    "start_time": [0,1,2,3,4,5,6,7,8,9]
+}
