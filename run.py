@@ -12,43 +12,25 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("run.py")
 
 import inputs
-from classifiers import classifiers, score_function
-
-def mock_predictors(X, mock="null"):
-    if mock == "null":
-        pass
-    elif mock == "full_rand":
-        logger.debug("Mocking data as IID standard normals.")
-        X = np.random.randn(*X.shape)
-    elif mock == "shuf_cols":
-        logger.debug("Mocking data by shuffling the columns.")
-        X = np.array([np.random.permutation(Xi) for Xi in X.T]).T
-    elif mock == "rand_cols":
-        logger.debug("Mocking data by generating columns with same mean and sd.")
-        X = np.array([np.random.randn(*Xi.shape) * np.std(Xi) + np.mean(Xi) for Xi in X.T]).T
-    else:
-        raise ValueError(f"Don't know what to do for {mock=}")
-    return X
+from classifiers import classifiers
 
 def score_predictions(y_pred, y_actual):
     return np.mean(np.sign(y_pred + np.random.randn(*y_pred.shape)*1e-8).astype(int) == np.sign(y_actual).astype(int))
     
-def run_single(config, search, mock = "null", response_threshold = 0, min_resp_trials = 0, auto_dual = True):
+def run_single(config, search, auto_dual = True):
     logger.debug(f"Running with {config}.")
 
     if config.n_sub == 0:
         logger.debug("{config.nsub=0} so skipping.")
         return np.nan, np.nan
     
-    X, y = inputs.generate_input_for_config(config, response_threshold=response_threshold, min_resp_trials=min_resp_trials)
+    X, y = inputs.generate_input_for_config(config)
     if len(X) == 0:
         logger.warning("No predictors found.")
         return np.nan, np.nan
     
     np.random.seed(config.seed)
     
-    X = mock_predictors(X, mock)    
-
     if auto_dual and 'dual' in dir(search.estimator["clf"]) and X.shape[1] <= X.shape[0]:
         logger.debug("X has at least as many rows as columns, so setting the dual parameter to False.")
         search.estimator["clf"].dual = False
@@ -84,7 +66,6 @@ def run_single(config, search, mock = "null", response_threshold = 0, min_resp_t
 
 def get_output_folder_name(args, head = None):
     raw           = args["raw"]           if type(args) is dict else args.raw
-    mock          = args["mock"]          if type(args) is dict else args.mock
     classifier    = args["classifier"]    if type(args) is dict else args.classifier
 
     if head is None:
@@ -97,8 +78,6 @@ def get_output_folder_name(args, head = None):
     folder = ""
     if raw:
         folder += "_raw"
-    if mock != "null":
-        folder += f"_{mock}"
     folder += "_"+classifier
     if folder[0] == "_":
         folder = folder[1:]
@@ -127,13 +106,8 @@ if __name__ == "__main__":
     parser.add_argument("classifier",      help="The name of the classifier to use.", type=str)
     parser.add_argument("--output_folder", help="Specific output folder to use.", type=str, default=None)
     parser.add_argument("--raw",           help="Whether to use the raw inputs, instead of standardizing.", action="store_true")
-    parser.add_argument("--mock",          help="Whether to mock the predictors. [null|shuf_cols|rand_cols|full_rand]. Default is 'null'.", type=str, default="null")
     args = parser.parse_args()
     print(args)
-
-    valid_mocks = ["null","shuf_cols", "rand_cols", "full_rand"]
-    if args.mock not in valid_mocks:
-        raise ValueError(f"{args.mock=} is not one of {valid_mocks}.")
 
     if args.classifier not in classifiers:
         raise ValueError(f"No classifier '{args.classifier}' available.")
@@ -156,7 +130,7 @@ if __name__ == "__main__":
     last_time = -1
     for index, conf in confs.iterrows():
         print(f"*"*120)
-        train_score, test_score = run_single(conf, search, mock = args.mock, response_threshold = conf.response_threshold, min_resp_trials = conf.min_resp_trials)
+        train_score, test_score = run_single(conf, search)
         print(f"{train_score=:1.3f}")
         print(f" {test_score=:1.3f}")
         new_record = conf.to_dict()

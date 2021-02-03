@@ -15,7 +15,7 @@ dataroot     = os.path.join(os.getenv('DATA'), "tobias", dataset_name, 'unpacked
 
 from consts import data_dir
 
-Config = namedtuple('Config', 'seed n_sub shuf freq pairs whiskers window_size start_time')
+Config = namedtuple('Config', 'seed n_sub shuf freq pairs whiskers window_size start_time response_threshold min_resp_trials')
 
 def load_experiments():
     from scipy.io import loadmat as loadmat_    
@@ -107,7 +107,7 @@ def filter_by_responsivity(Xrgt, t_all, ind_t_resp, t_baseline = [0, 3], respons
     else:
         return flag_resp
 
-def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p"), baseline = [0,3], response_threshold = 0, min_resp_trials = 0, return_full = False):
+def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p"), baseline = [0,3], return_full = False):
     logger.debug("generate_input_for_config")    
     if not os.path.exists(data_file):
         logger.debug(f"Could not find {data_file=}. Creating.")
@@ -138,6 +138,8 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     logger.debug(f"Picked time indices {ind_t[0]} ({t[ind_t[0]]:1.3f} sec.) to {ind_t[-1]} ({t[ind_t[-1]]:1.3f} sec.) to approximately span a {config.window_size=:1.3f} second window starting at {config.start_time=:1.3f} seconds.")
 
     # Filter glomeruli by responsivity
+    response_threshold = config.response_threshold
+    min_resp_trials    = config.min_resp_trials
     logger.debug(f"Filtering glomeruli by responsivity using {response_threshold=} and {min_resp_trials=}.")
     flag_resp     = filter_by_responsivity(Xrgt, t, ind_t, response_threshold = response_threshold, min_resp_trials = min_resp_trials)
 
@@ -226,10 +228,7 @@ if __name__ == "__main__":
         if conf_item not in confs_map:
             key = (conf.n_sub, conf.pairs, conf.freq, conf.whiskers, conf.window_size, conf.start_time)
             if key not in gloms_avail:
-                gloms_avail[key] = compute_gloms_available_for_config(conf,
-                                             response_threshold = sweep["response_threshold"],
-                                             min_resp_trials    = sweep["min_resp_trials"],
-                                             return_full = False)
+                gloms_avail[key] = compute_gloms_available_for_config(conf, return_full = False)
             n_glom_avail    = gloms_avail[key]
             confs_map[conf] = conf._replace(n_sub = n_glom_avail)
         if confs_map[conf] not in confs_to_run:
@@ -252,8 +251,6 @@ if __name__ == "__main__":
     
     for i, istart in enumerate(range(0,n_confs_to_run, n_confs_per_job)):
         df = pd.DataFrame(confs_to_run[istart:istart+n_confs_per_job], columns=fields)
-        df["response_threshold"] = sweep["response_threshold"]
-        df["min_resp_trials"]    = sweep["min_resp_trials"]        
         output_file = os.path.join(folder, f"input{i + args.startat:03d}.csv")
         df.to_csv(output_file, index=False)
 
