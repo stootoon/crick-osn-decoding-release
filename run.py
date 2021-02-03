@@ -8,7 +8,7 @@ import pandas as pd
 import time
 
 import logging
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("run.py")
 
 import inputs
@@ -120,12 +120,8 @@ if __name__ == "__main__":
     parser.add_argument("--output_folder", help="Specific output folder to use.", type=str, default=None)
     parser.add_argument("--raw",           help="Whether to use the raw inputs, instead of standardizing.", action="store_true")
     parser.add_argument("--mock",          help="Whether to mock the predictors. [null|shuf_cols|rand_cols|full_rand]. Default is 'null'.", type=str, default="null")
-    parser.add_argument("--debug",         help="Whether to set the logging level to DEBUG.", action = "store_true")
     args = parser.parse_args()
     print(args)
-
-    if args.debug:
-        logger.setLevel(logging.DEBUG)
 
     valid_mocks = ["null","shuf_cols", "rand_cols", "full_rand"]
     if args.mock not in valid_mocks:
