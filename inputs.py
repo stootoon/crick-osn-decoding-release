@@ -8,7 +8,7 @@ import pathlib
 import pickle
 import logging
 logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("inputs.py")
 
 dataset_name = 'CvsAC_OSN_imaging_awake_Sina'
 dataroot     = os.path.join(os.getenv('DATA'), "tobias", dataset_name, 'unpacked')
