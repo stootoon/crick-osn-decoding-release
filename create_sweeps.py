@@ -49,8 +49,8 @@ for pairs in args.pairs.split(","):
         tstep = args.tstep if (args.tstep > 0) else max(args.tstepmin, wnd/2)
         for whiskers in args.whiskers.split(","):            
             sweep = dict(template)
-            sweep["response_threshold"] = args.response_threshold
-            sweep["min_resp_trials"]    = args.min_resp_trials
+            sweep["response_threshold"] = [args.response_threshold]
+            sweep["min_resp_trials"]    = [args.min_resp_trials]
             sweep["n_seeds"]     = args.nseeds
             sweep["first_seed"]  = args.firstseed
             sweep["pairs"]       = [pairs]
