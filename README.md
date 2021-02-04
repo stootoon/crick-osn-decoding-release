@@ -26,7 +26,8 @@ Support vector classifiers have a parameter C which must be tuned to get good pe
 
 ## Code Usage
 ### 1. Generate json files defining sweeps using `create_sweeps.py`. 
-- For example: `python create_sweeps.py sweep --pairs AB,CD --whiskers yes,no,both`
+- For example: `python create_sweeps.py filt --pairs AB,CD,EF --window_size 0.025,0.1,2 --whiskers yes --template max_glom_sweep.json --tstep 0.2 --response_threshold 1 --min_resp_trials 0.75`
+- For example: `python create_sweeps.py full --pairs AB,CD,EF --window_size 2 --whiskers yes`
 - This will create json files prefixed with 'sweep' for each combination of pairs and whiskers specified.
 - The remaining sweep parameters will be read from `template_sweep.json`.
 - The json files for the sweep will be written to `data/sweeps`.
