@@ -7,7 +7,8 @@ import pandas as pd
 import pathlib
 import pickle
 import logging
-logging.basicConfig(level=logging.WARNING)
+
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("inputs.py")
 
 dataset_name = 'CvsAC_OSN_imaging_awake_Sina'
@@ -18,6 +19,9 @@ from consts import data_dir
 Config = namedtuple('Config', 'seed n_sub shuf freq pairs whiskers window_size start_time response_threshold min_resp_trials')
 
 def load_experiments():
+    # Loads the Ca2 imaginging data from MATLAB into a python dictionary
+    # and stores it in data_dir/data.p
+    
     from scipy.io import loadmat as loadmat_    
     loadmat  = lambda *args: loadmat_(os.path.join(dataroot, *args))
     
@@ -154,9 +158,9 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
         ind_glom = sorted(np.random.permutation(ind_resp_glom)[:config.n_sub])
         logger.debug(f"Picked {len(ind_glom)}/{n_resp_glom=} responsive glomeruli: {ind_glom=}")
        
-        X_sub = np.copy(Xrgt[:,ind_glom, :])
-    
-        X = np.mean(X_sub[:, :, ind_t],axis=-1)    
+        X_sub = np.copy(Xrgt[:, ind_glom, :])
+        X     = np.mean(X_sub[:, :, ind_t],axis=-1)
+        
         logger.debug(f"Shape of predictors: {X.shape=}")
     else:
         logger.warning("No responsive glomeruli found.")
@@ -212,16 +216,17 @@ if __name__ == "__main__":
     n_confs= len(confs)
     
     print(f"{n_confs} configurations in sweep before filtering.")
+
     # Each config specifies an n_sub, the desired number of glomeruli to use.
     # But after filtering, we get n_sub_avail.
     # We shouldn't run a config again if its parameters match a previously run one
     # and both have the same n_sub_avail.
-
     all_confs    = []          
     confs_map    = {}
     confs_to_run = []
     gloms_avail  = {}
     messages     = {}
+    
     for conf_item in confs:
         conf = Config(**{fld:conf_item[i] for i,fld in enumerate(fields)})
         all_confs.append(conf)
@@ -246,10 +251,10 @@ if __name__ == "__main__":
     print(f"Writing to {folder=}")
     os.makedirs(folder, exist_ok = True)
     
-    n_confs_per_job = n_confs_to_run // args.n_jobs
+    n_confs_per_job = max(n_confs_to_run // args.n_jobs, 1)
     print(f"{n_confs_per_job=}")
     
-    for i, istart in enumerate(range(0,n_confs_to_run, n_confs_per_job)):
+    for i, istart in enumerate(range(0, n_confs_to_run, n_confs_per_job)):
         df = pd.DataFrame(confs_to_run[istart:istart+n_confs_per_job], columns=fields)
         output_file = os.path.join(folder, f"input{i + args.startat:03d}.csv")
         df.to_csv(output_file, index=False)
@@ -257,12 +262,12 @@ if __name__ == "__main__":
     print(f"Wrote {i+1} input files to {folder=}")
 
     # We run into issues if we try to pickle Namedtuples, so recast
-    all_confs = [item._asdict() for item in all_confs]
+    all_confs    = [item._asdict() for item in all_confs]
     Config2tuple = lambda conf: tuple([conf._asdict()[fld] for fld in fields])
-    confs_map = {Config2tuple(key):Config2tuple(val) for key,val in confs_map.items()}
+    confs_map    = {Config2tuple(key):Config2tuple(val) for key,val in confs_map.items()}
     confs_to_run = [item._asdict() for item in confs_to_run]
-    messages  = {Config2tuple(key):msg for key,msg in messages.items()}
-    conf_file = os.path.join(folder, "config_filtering.p")
+    messages     = {Config2tuple(key):msg for key,msg in messages.items()}
+    conf_file    = os.path.join(folder, "config_filtering.p")
     config_filtering = {"all_confs":all_confs,
                         "confs_map":confs_map,
                         "confs_to_run":confs_to_run,
