@@ -1,4 +1,3 @@
-import numpy as np
 from sklearn.svm import SVC, LinearSVC
 from sklearn.linear_model import LassoLarsCV
 from collections import namedtuple
