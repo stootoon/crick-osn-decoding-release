@@ -6,6 +6,7 @@ from sklearn.pipeline import Pipeline
 import numpy as np
 import pandas as pd
 import time
+import pdb
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -14,11 +15,17 @@ logger = logging.getLogger("run.py")
 import inputs
 from classifiers import classifiers
 
-def score_predictions(y_pred, y_actual):
-    return np.mean(np.sign(y_pred + np.random.randn(*y_pred.shape)*1e-8).astype(int) == np.sign(y_actual).astype(int))
+def score_predictions(y_pred, y_actual, noise = True):
+    if noise:
+        return np.mean(np.sign(y_pred + np.random.randn(*y_pred.shape)*1e-8).astype(int) == np.sign(y_actual).astype(int))
+    else:
+        return np.mean(np.sign(y_pred).astype(int) == np.sign(y_actual).astype(int))
     
-def run_single(config, search, auto_dual = True):
+    
+def run_single(config, search, auto_dual = True, custom_scoring = True, scoring_noise = True):
     logger.debug(f"Running with {config}.")
+    logger.debug(f"Custom scoring is {'TRUE' if custom_scoring else 'FALSE'}.")
+    logger.debug(f"Scoring noise  is {'TRUE' if  scoring_noise else 'FALSE'}.")    
 
     if config.n_sub == 0:
         logger.debug("{config.nsub=0} so skipping.")
@@ -37,22 +44,39 @@ def run_single(config, search, auto_dual = True):
     
     train_scores, test_scores = [], []
     for i, (itrn, itst) in enumerate(StratifiedShuffleSplit(random_state = config.seed).split(X,y)):
+        logger.debug(f"Split {i:>2d}: ITRN {itrn}")
+        logger.debug(f"Split {i:>2d}: ITST {itst}")        
         X_trn, y_trn = X[itrn], np.copy(y[itrn])
         X_tst, y_tst = X[itst], np.copy(y[itst])
 
         if config.shuf:
             y_trn = np.random.permutation(y_trn)
             y_tst = np.random.permutation(y_tst)
+            logger.debug(f"Split {i:>2d}: {y_trn=}")
+            logger.debug(f"Split {i:>2d}: {y_tst=}")            
 
         search.fit(X_trn, y_trn)
-
+        logger.debug(f"Split {i:>2d}: {search.best_estimator_}")
         y_pred_trn = search.predict(X_trn)
         y_pred_tst = search.predict(X_tst)
 
-        train_scores.append(score_predictions(y_pred_trn, y_trn))
-        test_scores.append(score_predictions(y_pred_tst, y_tst))
+        logger.debug(f"Split {i:>2d}: Y_PRED_TRN={y_pred_trn}")
+        logger.debug(f"Split {i:>2d}: {y_pred_tst=}")            
+
+        if custom_scoring:
+            train_score = score_predictions(y_pred_trn, y_trn, scoring_noise)
+            test_score  = score_predictions(y_pred_tst, y_tst, scoring_noise)
+        else:
+            train_score = search.score(X_trn, y_trn)
+            test_score  = search.score(X_tst, y_tst)
+
+        train_scores.append(train_score)
+        test_scores.append(test_score)
         
-        logger.debug(f"Split {i:>2d}: TRAINING ({sum(y_trn>0):2d}/{len(y_trn):<2d} trials are +1) {train_scores[-1]:1.3f}\tTEST ({sum(y_tst>0):>2d}/{len(y_tst):<2d} trials are +1) {test_scores[-1]:1.3f}")        
+        logger.debug(f"Split {i:>2d}: TRAINING ({sum(y_trn>0):2d}/{len(y_trn):<2d} trials are +1) {train_scores[-1]:1.3f}\tTEST ({sum(y_tst>0):>2d}/{len(y_tst):<2d} trials are +1) {test_scores[-1]:1.3f}")
+
+        if i > 0:
+            break
 
     mean_train = np.mean(train_scores)
     mean_test  = np.mean(test_scores)
@@ -106,6 +130,7 @@ if __name__ == "__main__":
     parser.add_argument("classifier",      help="The name of the classifier to use.", type=str)
     parser.add_argument("--output_folder", help="Specific output folder to use.", type=str, default=None)
     parser.add_argument("--raw",           help="Whether to use the raw inputs, instead of standardizing.", action="store_true")
+    parser.add_argument("--custom",        help="Whether to use custom scoring.", action="store_true")    
     args = parser.parse_args()
     print(args)
 
@@ -130,7 +155,7 @@ if __name__ == "__main__":
     last_time = -1
     for index, conf in confs.iterrows():
         print(f"*"*120)
-        train_score, test_score = run_single(conf, search)
+        train_score, test_score = run_single(conf, search, args.custom)
         print(f"{train_score=:1.3f}")
         print(f" {test_score=:1.3f}")
         new_record = conf.to_dict()
