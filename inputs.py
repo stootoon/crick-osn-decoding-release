@@ -14,7 +14,7 @@ logger = logging.getLogger("inputs.py")
 dataset_name = 'CvsAC_OSN_imaging_awake_Sina'
 dataroot     = os.path.join(os.getenv('DATA'), "tobias", dataset_name, 'unpacked')
 
-from consts import data_dir
+from paths import data_dir
 
 Config = namedtuple('Config', 'seed n_sub shuf freq pairs whiskers window_size start_time response_threshold min_resp_trials')
 

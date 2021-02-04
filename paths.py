@@ -2,7 +2,7 @@ import os, sys
 import logging
 
 logging.basicConfig()
-logger = logging.getLogger("consts.py")
+logger = logging.getLogger("paths.py")
 logger.setLevel(logging.DEBUG)
 
 base_dir   = os.path.split(os.path.abspath(__file__))[0]

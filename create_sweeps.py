@@ -21,7 +21,7 @@ print(args)
 
 import json
 
-from consts import sweeps_dir
+from paths import sweeps_dir
 
 with open(args.template, "rb") as f:
     template = json.load(f)
