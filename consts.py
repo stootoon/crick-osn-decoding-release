@@ -12,5 +12,3 @@ sweeps_dir = os.path.join(data_dir, "sweeps")
 logger.info(f"{base_dir=}")
 logger.info(f"{data_dir=}")
 logger.info(f"{sweeps_dir=}")
-
-
