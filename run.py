@@ -65,12 +65,12 @@ def run_single(config, search, auto_dual = True):
     return mean_train, mean_test
 
 def get_output_folder_name(args, head = None):
-    raw           = args["raw"]           if type(args) is dict else args.raw
-    classifier    = args["classifier"]    if type(args) is dict else args.classifier
+    raw           = args["raw"]        if type(args) is dict else args.raw
+    classifier    = args["classifier"] if type(args) is dict else args.classifier
 
     if head is None:
-        input_file    = args["input_file"]    if type(args) is dict else args.input_file    
-        head, _ = os.path.split(input_file)
+        input_file  = args["input_file"] if type(args) is dict else args.input_file    
+        head, _     = os.path.split(input_file)
         if not head.endswith("inputs"):
             raise ValueError(f"Input file base directory {head=} path must be 'inputs'")
         head, _ = os.path.split(head) # Split again to get the parent of inputs
@@ -121,13 +121,12 @@ if __name__ == "__main__":
     n_confs = len(confs)
     print(f"Read {n_confs} configurations from {args.input_file}.")
     
-    search         = get_pipeline(classifier = args.classifier, raw = args.raw, verbose = True)
+    search  = get_pipeline(classifier = args.classifier, raw = args.raw, verbose = True)
 
     records = []
-    done    = 0
+    done       = 0
     start_time = time.time()
-    logging.getLogger("inputs").setLevel(logging.DEBUG)
-    last_time = -1
+    last_time  = -1
     for index, conf in confs.iterrows():
         print(f"*"*120)
         train_score, test_score = run_single(conf, search)
