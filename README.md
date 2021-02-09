@@ -1,5 +1,5 @@
 # Introduction
-This repository contains code to produce Extended Data panels 8k,l of  Ackels et al. (under review), and additional related panels that were not included in the paper. The panels show the performance of a variety of classifiers when decoding whether the two odours presented were fluctuating in a correlated or anti-correlated way.
+This repository contains code to produce **Extended Data panels 8k,l** of *Ackels et al. (under review)*, and additional related panels that were not included in the paper. The panels show the performance of a variety of classifiers when decoding whether the two odours presented were fluctuating in a correlated or anti-correlated way.
 
 The code was written and tested using Python 3.8, Jupyter Notebook 6.0.3 on CentOS Linux 7.6.1810.
 <!-- ## Classfication Procedure -->
@@ -31,6 +31,17 @@ To install the code and data,
 3. Unpack the data file to yield a `data` folder.
 4. Move this folder into the **installation root**. It should now sit at the same level as the `README.md` file.
 You should now be able to run the Jupyter notebook `make_figures.ipynb` to produce the figures in the paper.
+## Data
+The data folder contains
+1. `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli that were decoded;
+   - This file is used internally by the other scripts to assemble data for classification.
+   - The data can be accessed directly as a dictionary at Python prompt using:
+	 ```
+	 import numpy as np;
+	 data = np.load("data.p", allow_pickle = True).item()
+	 ```
+2. `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
+
 
 ## Code Usage
 ### 1. Generate json files defining sweeps using `create_sweeps.py`. 
