@@ -40,6 +40,16 @@ The data folder contains
 	 import numpy as np;
 	 data = np.load("data.p", allow_pickle = True).item()
 	 ```
+   - The dictionary contains the following fields:
+	 - `dt`: A scalar, containing the sampling time in seconds;
+	 - `pairs`: A list of the odour pairs used;
+     - `experiments`: A list of the names of the experiments whose data was pooled across;
+	 - `stims`: A dictionary keyed by `2` and `20` (the stimulus frequencies) and contains the names of the stimuli used at that frequency. E.g.
+		 ```python
+		 >>> data["stims"][2]
+		 ['2Hzanti-corr01', '2Hzanti-corr02', '2Hzcorr01', '2Hzcorr02']
+		 ```
+	 
 2. `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
 
 
