@@ -49,12 +49,17 @@ The data folder contains
 		 >>> data["stims"][2]
 		 ['2Hzanti-corr01', '2Hzanti-corr02', '2Hzcorr01', '2Hzcorr02']
 		 ```
-	 - `ind2expr`: A 145-element list of tuples indicating which ROI in which experiment each ROI is. For example, to find the origin of the 45th ROI,
+	 - `ind2expr`: A 145-element list of tuples indicating which ROI in which experiment each ROI is. For example, to find the origin of the 45th (base 0) ROI,
 		 ```python
 		 >>> data["ind2expr"][45]
 		 ('2020_11_08_ASBA8.7e', 14)
 		 ```
-		 indicating that it is ROI 14 (base 0) in experiment 2020_11_08_ASBA8.7e.
+		 indicating that it is ROI 14 (base 0) in experiment 2020_11_08_ASBA8.7e;
+	 - `X`: A dictionary containing calcium imaging data itself. The first level of the dictionary is keyed by frequency, and the level below by (stimulus, odour_pair) tuples. For example, to determine the shape of the data for thecond 2Hz anti-correlated stimulus pattern using odour pair AB:
+		 ```python
+		 >>> data["X"][2]['2Hzanti-corr02', 'AB'].shape
+		 (12, 145, 370)
+		 ```
 2. `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
 
 
