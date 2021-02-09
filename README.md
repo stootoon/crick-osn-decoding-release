@@ -49,7 +49,12 @@ The data folder contains
 		 >>> data["stims"][2]
 		 ['2Hzanti-corr01', '2Hzanti-corr02', '2Hzcorr01', '2Hzcorr02']
 		 ```
-	 
+	 - `ind2expr`: A 145-element list of tuples indicating which ROI in which experiment each ROI is. For example, to find the origin of the 45th ROI,
+	 ```python
+	 >>> data["ind2expr"][45]
+	 ('2020_11_08_ASBA8.7e', 14)
+	 ```
+	 indicating that it is ROI 14 (base 0) in experiment 2020_11_08_ASBA8.7e.
 2. `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
 
 
