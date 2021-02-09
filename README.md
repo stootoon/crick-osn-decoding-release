@@ -36,7 +36,7 @@ The data folder contains
 1. `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli that were decoded;
    - This file is used internally by the other scripts to assemble data for classification.
    - The data can be accessed directly as a dictionary at Python prompt using:
-	 ```
+	 ```python
 	 import numpy as np;
 	 data = np.load("data.p", allow_pickle = True).item()
 	 ```
