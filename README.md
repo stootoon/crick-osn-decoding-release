@@ -86,10 +86,19 @@ The data folder contains:
 	- `dt0.2`:The windows were spaced 200 ms apart;
 	- `rt1.000`: The response threshold was 1 baseline SD (adjusted for window size);
 	- `mrt0.75`: The minimum fraction of responsive trials was 0.75.
-  - For The sweeps prefixed `all` the decoding performance of random subsets of glomeruli were measured. The sizes of the subsets used was varied in steps of 10 from 1 to 145. Glomeruli were selected at random i.e. no filtering for responsivity was performed.
+  - For the sweeps prefixed `all` the decoding performance of random subsets of glomeruli were measured. The sizes of the subsets used was varied in steps of 10 from 1 to 145. Glomeruli were selected at random i.e. no filtering for responsivity was performed.
   - In the sweeps prefixed `filt` all *responsive* glomeruli were used in each window.
+  - Each sweep folder contains:
+	1. An `inputs` folder, which contains
+		- CSV files `inputXYZ.csv`. These files contain input configurations to be run and are passed to `run.py`.
+		- Each row inside and `inputXYZ.csv` file specifies a particular input configuration.
+		- The header row describes the meaning of each column, such as the seed being used, the frequency of the input, etc.
+		- In addition to the `inputXYZ.csv` files, the `inputs` also contains a pickle file `config_filtering.p` which continains the details of the responsivity filtering procedure used when creating the sweep, that determined which configurations were to be run.
+	2. One classifier folder for each classifier used on these inputs.
+		- For example the folder `data/sweeps/all_100x_AB_2000ms_Wyes/lasso_lars_no_intercept` contains the results of running the `lasso_lars_no_intercept` classier on the inputs in `data/sweeps/all_100x_AB_2000ms_Wyes/inputs`.
+		- Each classifier folder contains a list of `outputXYZ.csv` files, one for each `inputXYZ.csv` file.
 
-
+		
 ## Code Usage
 ### 1. Generate json files defining sweeps using `create_sweeps.py`. 
 - For example: `python create_sweeps.py filt --pairs AB,CD,EF --window_size 0.025,0.1,2 --whiskers yes --template max_glom_sweep.json --tstep 0.2 --response_threshold 1 --min_resp_trials 0.75`
