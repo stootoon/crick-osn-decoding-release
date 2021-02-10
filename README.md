@@ -103,7 +103,7 @@ The `data` folder contains:
 		- The classifier olders also contain SLURM output files showing a detailed log of the accuracy computation process.
 ## Code Usage
 The full process of creating and running a sweep like those used in the paper are described here. To run the decoding analysis on the inputs provided below `data/sweeps` jump straight to step 3.
-### 1. Generate json files defining sweeps using `create_sweeps.py`. 
+### 1. Generate JSON files defining sweeps using `create_sweeps.py`. 
 - For example: `python create_sweeps.py simple --pairs AB,CD,EF --window_size 2 --whiskers yes`
 - This will create JSON files prefixed with base name `simple` to run sweeps using odours AB, CD and EF, a window size of 2, and using only trials with intact whiskers.
 - The remaining sweep parameters will be read from `template_sweep.json`.
