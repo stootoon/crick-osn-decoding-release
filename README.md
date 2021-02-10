@@ -24,7 +24,7 @@ The code was written and tested using Python 3.8, Jupyter Notebook 6.0.3 on Cent
 <!-- Support vector classifiers have a parameter C which must be tuned to get good performance. We performed this tuning by performing a grid search over a fixed set of powers of 10. But we also able to get equally good classification performance and interpretability by using the Lasso while also avoiding the manual tuning of the C parameter by using the lasso in the `LassoLarsCV' incarnation provided by scikit-learn. Because the lasso is technically a regression procedure, to use it as a classifier we added a very small amount of random noise to its predicted outputs for each trial and took the sign of the result as the classification prediction. The additive noise was to force the selection of a random sign whenever the lasso has learned the all-zeros weight vector, for which the prediction for each trial would otherwise be exactly zero. Thus because it does not require parameter tuning, provides good classification performance and interpretabile weights we ultimately settled on the Lasso when computing decoding accuracies. -->
 
 <!-- #### Nonlinear  -->
-## Setup
+# Setup
 To install the code and data,
 1. Download the code repository and unpack at your desired **installation root**.
 2. Download the data from [this](https://www.dropbox.com/s/pncq56d4evnx7v4/crick-osn-model-release-data.tar.gz?dl=0) link (~250 MB).
@@ -32,9 +32,9 @@ To install the code and data,
 4. Move this folder into the **installation root**. It should now sit at the same level as the `README.md` file.
 
 To create the figures in the paper, run the Jupyter notebook `make_figures.ipynb`.
-## Data
+# Data
 The `data` folder contains:
-### `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli.
+## `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli.
 - This file is used internally by the other scripts to assemble data for classification.
 - The data can be accessed directly as a dictionary at Python prompt using:
   ```python
@@ -66,7 +66,7 @@ The `data` folder contains:
 	- The first dimension are 12 repetitions. The first 6 are with whiskers intact, the last 6 with whiskers clipped. Only the first 6 trials are use for the analyses in the paper.
 	- The second dimension are the 145 glomeruli.
 	- The last dimension are the 370 time points.
-### `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
+## `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
   - This folder contains JSON files describing each sweep, and corresponding folders containing the results of the sweep.
   - The name of each JSON file and corresponding folder describes the parameters of the run.
   - The names are of the form `[prefix]_[#seeds]x_[odour_pair]_[window_size_in_ms]ms_W[yes|no|both]`.
@@ -101,27 +101,27 @@ The `data` folder contains:
 		- Each row of an output file corresponds to the same row in the inputs file.
         - The final two columns indicate the training and test accuracy when running the given classifier on the given input configuration.
 		- The classifier olders also contain SLURM output files showing a detailed log of the accuracy computation process.
-## Code Usage
+# Code Usage
 The full process of creating and running a sweep like those used in the paper are described here. To run the decoding analysis on the inputs provided for the sweeps in `data/sweeps` jump straight to step 3.
-### 1. Generate JSON files defining sweeps using `create_sweeps.py`. 
+## 1. Generate JSON files defining sweeps using `create_sweeps.py`. 
 - For example: `python create_sweeps.py simple --pairs AB,CD,EF --window_size 2 --whiskers yes`
 - This will create JSON files prefixed with base name `simple` to run sweeps using odours AB, CD and EF, a window size of 2, and using only trials with intact whiskers.
 - The remaining sweep parameters will be read from `template_sweep.json`.
 - The JSON files for the sweep will be written to `data/sweeps`.
-### 2. Generate the input configurations for each of the jobs carrying out the sweep using `inputs.py`
+## 2. Generate the input configurations for each of the jobs carrying out the sweep using `inputs.py`
 - Once the JSON files specifying a sweep are created, the next step is to create the correspoding `inputXYZ.csv` files.
 - The `inputs.py` script is used to do this.
 - For example: `python inputs.py data/sweeps/sweep_100x_AB_1000ms_Wboth.json 100`
 - This generates up to 100 csv files, named 'input000.csv', 'input001.csv' etc.
 - The csv files are written to `data/sweeps/sweep_100x_AB_1000ms_Wboth/inputs`
 - The rows of each csv file contain all the input configurations for a single job.
-### 3. Run a configuration using `run.py`
+## 3. Run a configuration using `run.py`
 - Finally, the decoding analysis can be run on the input configurations specified in one of the `inputXYZ.csv` files.
 - For example: `python run.py data/sweeps/sweep_100x_AB_1000ms_Wboth/inputs/input000.csv lasso_lars`
 - This will run the `lasso_lars` classifier on the input configurations listed in `input000.csv`
 - The outputs will be written to : `data/sweeps/sweep_100x_AB_1000ms_Wboth/lasso_lars`
 - The rows of the resulting `outputXYZ.csv` file will contain the training and test accuracy when using the specified classifier on the configuration specified on the corresponding row of the corresponding `inputXYZ.csv` file.
-## Misc Files
+# Misc Files
 - `template_sweep.json`: Contains the default sweep parameters which are then modified to define individual sweeps.
 - `consts.py`: Contains various constants, like paths to data directories, etc.
 - `classifiers.list`: A list of the classifiers available
