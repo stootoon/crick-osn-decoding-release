@@ -30,6 +30,7 @@ To install the code and data,
 2. Download the data from [this](https://www.dropbox.com/s/pncq56d4evnx7v4/crick-osn-model-release-data.tar.gz?dl=0) link (~250 MB).
 3. Unpack the data file to yield a `data` folder.
 4. Move this folder into the **installation root**. It should now sit at the same level as the `README.md` file.
+
 To create the figures in the paper, run the Jupyter notebook `make_figures.ipynb`.
 ## Data
 The `data` folder contains:
