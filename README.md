@@ -97,6 +97,8 @@ The data folder contains:
 	2. One classifier folder for each classifier used on these inputs.
 		- For example the folder `data/sweeps/all_100x_AB_2000ms_Wyes/lasso_lars_no_intercept` contains the results of running the `lasso_lars_no_intercept` classier on the inputs in `data/sweeps/all_100x_AB_2000ms_Wyes/inputs`.
 		- Each classifier folder contains a list of `outputXYZ.csv` files, one for each `inputXYZ.csv` file.
+		- Each row of an output file corresponds to the same row in the inputs file.
+        - The final two columns indicate the training and test accuracy when running the given classifier on the given input configuration.
 
 		
 ## Code Usage
