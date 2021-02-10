@@ -32,8 +32,8 @@ To install the code and data,
 4. Move this folder into the **installation root**. It should now sit at the same level as the `README.md` file.
 You should now be able to run the Jupyter notebook `make_figures.ipynb` to produce the figures in the paper.
 ## Data
-The data folder contains
-1. `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli that were decoded;
+The data folder contains:
+### `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli.
    - This file is used internally by the other scripts to assemble data for classification.
    - The data can be accessed directly as a dictionary at Python prompt using:
 	 ```python
@@ -43,12 +43,12 @@ The data folder contains
    - The dictionary contains the following fields:
 	 - `dt`: A scalar, containing the sampling time in seconds;
 	 - `pairs`: A list of the odour pairs used;
-     - `experiments`: A list of the names of the experiments whose data was pooled across;
 	 - `stims`: A dictionary keyed by `2` and `20` (the stimulus frequencies) and contains the names of the stimuli used at that frequency. E.g.
 		 ```python
 		 >>> data["stims"][2]
 		 ['2Hzanti-corr01', '2Hzanti-corr02', '2Hzcorr01', '2Hzcorr02']
 		 ```
+     - `experiments`: A list of the names of the experiments whose data was pooled across;		 
 	 - `ind2expr`: A 145-element list of tuples indicating which ROI in which experiment each ROI is. For example, to find the origin of the 45th (base 0) ROI,
 		 ```python
 		 >>> data["ind2expr"][45]
@@ -65,7 +65,7 @@ The data folder contains
 		 - The first dimension are 12 repetitions. The first 6 are with whiskers intact, the last 6 with whiskers clipped. Only the first 6 trials are use for the analyses in the paper.
 		 - The second dimension are the 145 glomeruli.
 	     - The last dimension are the 370 time points.
-2. `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
+### `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
 
 
 ## Code Usage
