@@ -65,7 +65,29 @@ The data folder contains:
 	- The first dimension are 12 repetitions. The first 6 are with whiskers intact, the last 6 with whiskers clipped. Only the first 6 trials are use for the analyses in the paper.
 	- The second dimension are the 145 glomeruli.
 	- The last dimension are the 370 time points.
-g### `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
+### `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
+  - This folder contains JSON files describing each sweep, and corresponding folders containing the results of the sweep.
+  - The name of each JSON file and corresponding folder describes the parameters of the run.
+  - The names are of the form `[prefix]_[#seeds]x_[odour_pair]_[window_size_in_ms]ms_W[yes|no|both]`.
+	- `W[yes|no|both]` indicates which whisker trials were used:
+		- `Wyes`: Only trials with intact whiskers wer used;
+		- `Wno`: Only trials without intact whiskers were used;
+		- `Wboth`: All trials were used.
+  - The name is suffixed with additional terms if non-default parameter values were used.
+	- `dt`: The spacing between decoding windows, in seconds;
+	- `rt`: The response threshold in baseline SDs, when filtering for responsivity;
+	- `mrt`: The minimum number/fraction of responsive trials, when filtering for responsivity;
+  - For example, for the run named `filt_100x_EF_25ms_Wyes_dt0.2_rt1.000_mrt0.75`:
+	- `filt`: The base name of the sweeps;
+	- `100x`: Accuracy was computed for 100 random seeds;
+	- `EF`: The odour pair used was `EF`;
+	- `25ms`: A window size close to 25 ms was used;
+	- `Wyes`: Only whiskered trials were used;
+	- `dt0.2`:The windows were spaced 200 ms apart;
+	- `rt1.000`: The response threshold was 1 baseline SD (adjusted for window size);
+	- `mrt0.75`: The minimum fraction of responsive trials was 0.75.
+  - For The sweeps prefixed `all` the decoding performance of random subsets of glomeruli were measured. The sizes of the subsets used was varied in steps of 10 from 1 to 145. Glomeruli were selected at random i.e. no filtering for responsivity was performed.
+  - In the sweeps prefixed `filt` all *responsive* glomeruli were used in each window.
 
 
 ## Code Usage
