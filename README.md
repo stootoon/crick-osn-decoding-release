@@ -34,7 +34,7 @@ To install the code and data,
 To create the figures in the paper, run the Jupyter notebook `make_figures.ipynb`.
 # Data
 The `data` folder contains:
-## `data.p`: A Numpy pickle file containing the calcium responses of the 145 glomeruli.
+## `data.p`: File containing the calcium responses of the 145 glomeruli.
 - This file is used internally by the other scripts to assemble data for classification.
 - The data can be accessed directly as a dictionary at Python prompt using:
   ```python
