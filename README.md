@@ -55,11 +55,16 @@ The data folder contains
 		 ('2020_11_08_ASBA8.7e', 14)
 		 ```
 		 indicating that it is ROI 14 (base 0) in experiment 2020_11_08_ASBA8.7e;
-	 - `X`: A dictionary containing calcium imaging data itself. The first level of the dictionary is keyed by frequency, and the level below by (stimulus, odour_pair) tuples. For example, to determine the shape of the data for thecond 2Hz anti-correlated stimulus pattern using odour pair AB:
+	 - `X`: A dictionary containing calcium imaging data itself. The first level of the dictionary is keyed by frequency, and the level below by (stimulus, odour_pair) tuples. For example, to determine the shape of the data for the 2Hz anti-correlated stimulus pattern using odour pair AB
 		 ```python
 		 >>> data["X"][2]['2Hzanti-corr02', 'AB'].shape
 		 (12, 145, 370)
 		 ```
+		 - The names of the stimulus condition are those in `data["stims"]` described above.
+	     - The odour pairs available are those provided in `data["pairs"]` described above.
+		 - The first dimension are 12 repetitions. The first 6 are with whiskers intact, the last 6 with whiskers clipped. Only the first 6 trials are use for the analyses in the paper.
+		 - The second dimension are the 145 glomeruli.
+	     - The last dimension are the 370 time points.
 2. `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
 
 
