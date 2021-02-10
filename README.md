@@ -60,11 +60,11 @@ The data folder contains:
 	>>> data["X"][2]['2Hzanti-corr02', 'AB'].shape
 	(12, 145, 370)
 	```
-		- The names of the stimulus condition are those in `data["stims"]` described above.
-		- The odour pairs available are those provided in `data["pairs"]` described above.
-		- The first dimension are 12 repetitions. The first 6 are with whiskers intact, the last 6 with whiskers clipped. Only the first 6 trials are use for the analyses in the paper.
-		- The second dimension are the 145 glomeruli.
-		- The last dimension are the 370 time points.
+	- The names of the stimulus condition are those in `data["stims"]` described above.
+    - The odour pairs available are those provided in `data["pairs"]` described above.
+	- The first dimension are 12 repetitions. The first 6 are with whiskers intact, the last 6 with whiskers clipped. Only the first 6 trials are use for the analyses in the paper.
+	- The second dimension are the 145 glomeruli.
+	- The last dimension are the 370 time points.
 g### `sweeps`: A folder containing the results of the parameter sweeps used in the paper.
 
 
