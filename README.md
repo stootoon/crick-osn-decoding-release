@@ -89,9 +89,9 @@ The full process of creating and running a sweep like those used in the paper ar
 ## 2. Generate the input configurations for each of the jobs carrying out the sweep using `inputs.py`
 - Once the JSON files specifying a sweep are created, the next step is to create the correspoding `inputXYZ.csv` files.
 - The `inputs.py` script is used to do this.
-- For example: `python inputs.py data/sweeps/sweep_100x_AB_1000ms_Wboth.json 100`
-- This generates up to 100 csv files, named 'input000.csv', 'input001.csv' etc.
-- The csv files are written to `data/sweeps/sweep_100x_AB_1000ms_Wboth/inputs`
+- For example: `python inputs.py data/sweeps/simple_100x_AB_2000ms_Wyes.json 10`
+- This generates 10 csv files, named 'input000.csv', 'input001.csv' etc.
+- The csv files are written to `data/sweeps/simple_100x_AB_2000ms_Wyes/inputs`
 - The rows of each csv file contain all the input configurations for a single job.
 ## 3. Run a configuration using `run.py`
 - Finally, the decoding analysis can be run on the input configurations specified in one of the `inputXYZ.csv` files.
