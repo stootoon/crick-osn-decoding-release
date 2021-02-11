@@ -11,9 +11,6 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("inputs.py")
 
-dataset_name = 'CvsAC_OSN_imaging_awake_Sina'
-dataroot     = os.path.join(os.getenv('DATA'), "tobias", dataset_name, 'unpacked')
-
 from paths import data_dir
 
 Config = namedtuple('Config', 'seed n_sub shuf freq pairs whiskers window_size start_time response_threshold min_resp_trials')
@@ -21,6 +18,8 @@ Config = namedtuple('Config', 'seed n_sub shuf freq pairs whiskers window_size s
 def load_experiments():
     # Loads the Ca2 imaginging data from MATLAB into a python dictionary
     # and stores it in data_dir/data.p
+    dataset_name = 'CvsAC_OSN_imaging_awake_Sina'
+    dataroot     = os.path.join(os.getenv('DATA'), "tobias", dataset_name, 'unpacked')
     
     from scipy.io import loadmat as loadmat_    
     loadmat  = lambda *args: loadmat_(os.path.join(dataroot, *args))
