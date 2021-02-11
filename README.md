@@ -2,28 +2,6 @@
 This repository contains code to produce **Extended Data panels 8k,l** of *Ackels et al. (under review)*, and additional related panels that were not included in the paper. The panels show the performance of a variety of classifiers when decoding whether the two odours presented were fluctuating in a correlated or anti-correlated way.
 
 The code was written and tested using Python 3.8, Jupyter Notebook 6.0.3 on CentOS Linux 7.6.1810.
-<!-- ## Classfication Procedure -->
-<!-- The aim of the classification was to determine whether the two odours presented to the animal were fluctuating in a correlated or anticorrelated manner using the calcium responses of 145 glomeruli sampled at 30 Hz from 3 seconds before odour onset to 9 seconds after odour onset.  -->
-<!-- ### Classifier Inputs -->
-<!-- Odours were presented in pairs. Three pairs of odours ('AB','CD', and 'EF') were used with concentrations fluctuating according to whether -->
-<!-- - Fluctuations were at 2 Hz or 20 Hz; -->
-<!-- - The two odours fluctuated in-sync ('correlated') or out-of-sync ('anti-correlated'); -->
-<!-- - The initial phase shift of the first odour was 0 or 180 degrees; -->
-<!-- For each setting of the parameters above 6 trials were recorded. This yielded, for each odour pair and frequency, 24 trials for classification: (6 trials) x (2 correlation patterns) x (2 phase shifts). -->
-
-<!-- Independent classifiers were learned for each odour pair, fluctuation frequency, time point of interest and response window size (which we collectively term a 'configuration'). Response window sizes used were 1 bin (~33 ms), 2 bins (~66 ms), 4 bins (~132 ms), and 62 bins (~2 seconds). The response of each of the 145 ROIs to each stimulus was averaged over the relevant bins at each time point. This yielded, for each each configuration, a matrix of 24 samples x 145 predictors, where each sample contained the responses of the 145 ROIs to one of the 24 stimuls trials for that configuration, and a corresponding 24-dimensional vector of labels whose elements were +1 if the corresponding trial had correlated fluctuations, and -1 if anti-correlated. Finally, before classification, the predictors matrix was standardized so that columns had mean zero and unit variance. -->
-
-<!-- See the function `get_input_for_config` in `inputs.py` for the relevant code. -->
-<!-- ### Choice of classifiers -->
-<!-- Because we had fewer samples than predictors, the data was linearly separable and we used regularized classifiers to promote the learning of robust classification boundaries. We used off-the-shelf classifiers provided by scikit-learn. -->
-
-<!-- We began by using support vector classifiers with linear kernels. We started with the standard l2 penalty on the weights. While this gave good classification results, we were also aiming for the intepretability. Although the l2 penalty promotes small weights it usually does not set any to zero, implicating all ROIs in every classification. To get more intepretable results, we switched to using the l1 penalty on the weights. This gave similar classification performance but the resulting sparse weight vectors allowed us to more easily find and verify the ROIs contributing to a given classification performance.  -->
-
-<!-- We initially also learned intercepts for these classifiers, but found that this led to overfitting as evidenced by sub-chance shuffled performance, so we subsequently held intercepts at zero. This resulted in chance-level performance for the shuffled trials, as we expected. -->
-
-<!-- Support vector classifiers have a parameter C which must be tuned to get good performance. We performed this tuning by performing a grid search over a fixed set of powers of 10. But we also able to get equally good classification performance and interpretability by using the Lasso while also avoiding the manual tuning of the C parameter by using the lasso in the `LassoLarsCV' incarnation provided by scikit-learn. Because the lasso is technically a regression procedure, to use it as a classifier we added a very small amount of random noise to its predicted outputs for each trial and took the sign of the result as the classification prediction. The additive noise was to force the selection of a random sign whenever the lasso has learned the all-zeros weight vector, for which the prediction for each trial would otherwise be exactly zero. Thus because it does not require parameter tuning, provides good classification performance and interpretabile weights we ultimately settled on the Lasso when computing decoding accuracies. -->
-
-<!-- #### Nonlinear  -->
 # Setup
 To install the code and data,
 1. Download the code repository and unpack at your desired **installation root**.
@@ -121,11 +99,12 @@ The full process of creating and running a sweep like those used in the paper ar
 - This will run the `lasso_lars` classifier on the input configurations listed in `input000.csv`
 - The outputs will be written to : `data/sweeps/sweep_100x_AB_1000ms_Wboth/lasso_lars`
 - The rows of the resulting `outputXYZ.csv` file will contain the training and test accuracy when using the specified classifier on the configuration specified on the corresponding row of the corresponding `inputXYZ.csv` file.
-# Misc Files
-- `template_sweep.json`: Contains the default sweep parameters which are then modified to define individual sweeps.
-- `consts.py`: Contains various constants, like paths to data directories, etc.
-- `classifiers.list`: A list of the classifiers available
+# Other Files
+- `classifiers.py`: Contains a list of the classifiers used and ranges for any parameters that were to be optimized, such as the SVM `C` parameter.
+- `paths.py`: Contains paths to important directories.
 - `submit_sweep.py`: A helper file for running all the inputs in a folder as SLURM jobs.
   - For example: `python submit_sweep.py data/sweeps/sweep_100x_AB_1000ms_Wboth lasso_lars --submit`
   - This will submit jobs to run all the `lasso_lars` classifer on inputs in the specified folder.
+- `template_sweep.json`: Contains the default sweep parameters which are then modified by `create_sweep.py` to define individual sweeps. Notably, the number of glomeruli used `n_sub` is set to vary in steps of 10 from 1 to 145. This was used to create the `full` sweep provided.
+- `max_glom_sweep.json`: Similar to `template_sweep.json` but the number of glomeruli used `n_sub` is fixed at the maximum value of 145. This was used for the `filt` sweeps provided, in which glomeruli were subsequently filtered for responsivity.
   
