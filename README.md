@@ -95,9 +95,9 @@ The full process of creating and running a sweep like those used in the paper ar
 - The rows of each csv file contain all the input configurations for a single job.
 ## 3. Run a configuration using `run.py`
 - Finally, the decoding analysis can be run on the input configurations specified in one of the `inputXYZ.csv` files.
-- For example: `python run.py data/sweeps/sweep_100x_AB_1000ms_Wboth/inputs/input000.csv lasso_lars`
-- This will run the `lasso_lars` classifier on the input configurations listed in `input000.csv`
-- The outputs will be written to : `data/sweeps/sweep_100x_AB_1000ms_Wboth/lasso_lars`
+- For example: `python run.py data/sweeps/simple_100x_AB_1000ms_Wboth/inputs/input000.csv lasso_lars_no_intercept`
+- This will run the `lasso_lars_no_intercept` classifier on the input configurations listed in `input000.csv`
+- The outputs will be written to : `data/sweeps/simple_100x_AB_1000ms_Wboth/lasso_lars_no_intercept`
 - The rows of the resulting `outputXYZ.csv` file will contain the training and test accuracy when using the specified classifier on the configuration specified on the corresponding row of the corresponding `inputXYZ.csv` file.
 # Other Files
 - `classifiers.py`: Contains a list of the classifiers used and ranges for any parameters that were to be optimized, such as the SVM `C` parameter.
