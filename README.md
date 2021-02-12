@@ -109,6 +109,6 @@ The full process of creating and running a sweep like those used in the paper ar
 - `max_glom_sweep.json`: Similar to `template_sweep.json` but the number of glomeruli used `n_sub` is fixed at the maximum value of 145. This was used for the `filt` sweeps provided, in which glomeruli were subsequently filtered for responsivity.
   
 
-LocalWords:  Ackels Jupyter CentOS stims Hzanti corr Hzcorr JSON filt
-LocalWords:  responsivity inputXYZ csv config lars outputXYZ SLURM py
-LocalWords:  AB EF json SVM glom
+<!-- LocalWords:  Ackels Jupyter CentOS stims Hzanti corr Hzcorr JSON filt -->
+<!-- LocalWords:  responsivity inputXYZ csv config lars outputXYZ SLURM py -->
+<!-- LocalWords:  AB EF json SVM glom -->
