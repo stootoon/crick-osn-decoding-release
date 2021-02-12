@@ -49,7 +49,7 @@ The `data` folder contains:
   - The name of each JSON file and corresponding folder describes the parameters of the run.
   - The names are of the form `[prefix]_[#seeds]x_[odour_pair]_[window_size_in_ms]ms_W[yes|no|both]`.
 	- `W[yes|no|both]` indicates which whisker trials were used:
-		- `Wyes`: Only trials with intact whiskers wer used;
+		- `Wyes`: Only trials with intact whiskers were used;
 		- `Wno`: Only trials without intact whiskers were used;
 		- `Wboth`: All trials were used.
   - The name is suffixed with additional terms if non-default parameter values were used.
@@ -72,13 +72,13 @@ The `data` folder contains:
 		- CSV files `inputXYZ.csv`. These files contain input configurations to be run and are passed to `run.py`.
 		- Each row inside and `inputXYZ.csv` file specifies a particular input configuration.
 		- The header row describes the meaning of each column, such as the seed being used, the frequency of the input, etc.
-		- In addition to the `inputXYZ.csv` files, the `inputs` also contains a pickle file `config_filtering.p` which continains the details of the responsivity filtering procedure used when creating the sweep, that determined which configurations were to be run.
+		- In addition to the `inputXYZ.csv` files, the `inputs` also contains a pickle file `config_filtering.p` which contains the details of the responsivity filtering procedure used when creating the sweep, that determined which configurations were to be run.
 	2. One classifier folder for each classifier used on these inputs.
 		- For example the folder `data/sweeps/all_100x_AB_2000ms_Wyes/lasso_lars_no_intercept` contains the results of running the `lasso_lars_no_intercept` classier on the inputs in `data/sweeps/all_100x_AB_2000ms_Wyes/inputs`.
 		- Each classifier folder contains a list of `outputXYZ.csv` files, one for each `inputXYZ.csv` file.
 		- Each row of an output file corresponds to the same row in the inputs file.
         - The final two columns indicate the training and test accuracy when running the given classifier on the given input configuration.
-		- The classifier olders also contain SLURM output files showing a detailed log of the accuracy computation process.
+		- The classifier folders also contain SLURM output files showing a detailed log of the accuracy computation process.
 # Code Usage
 The full process of creating and running a sweep like those used in the paper are described here. To run the decoding analysis on the inputs provided for the sweeps in `data/sweeps` jump straight to step 3.
 ## 1. Generate JSON files defining sweeps using `create_sweeps.py`. 
@@ -87,7 +87,7 @@ The full process of creating and running a sweep like those used in the paper ar
 - The remaining sweep parameters will be read from `template_sweep.json`.
 - The JSON files for the sweep will be written to `data/sweeps`.
 ## 2. Generate the input configurations for each of the jobs carrying out the sweep using `inputs.py`
-- Once the JSON files specifying a sweep are created, the next step is to create the correspoding `inputXYZ.csv` files.
+- Once the JSON files specifying a sweep are created, the next step is to create the corresponding `inputXYZ.csv` files.
 - The `inputs.py` script is used to do this.
 - For example: `python inputs.py data/sweeps/simple_100x_AB_2000ms_Wyes.json 10`
 - This generates 10 csv files, named 'input000.csv', 'input001.csv' etc.
@@ -104,7 +104,11 @@ The full process of creating and running a sweep like those used in the paper ar
 - `paths.py`: Contains paths to important directories.
 - `submit_sweep.py`: A helper file for running all the inputs in a folder as SLURM jobs.
   - For example: `python submit_sweep.py data/sweeps/sweep_100x_AB_1000ms_Wboth lasso_lars --submit`
-  - This will submit jobs to run all the `lasso_lars` classifer on inputs in the specified folder.
+  - This will submit jobs to run all the `lasso_lars` classifier on inputs in the specified folder.
 - `template_sweep.json`: Contains the default sweep parameters which are then modified by `create_sweep.py` to define individual sweeps. Notably, the number of glomeruli used `n_sub` is set to vary in steps of 10 from 1 to 145. This was used to create the `full` sweep provided.
 - `max_glom_sweep.json`: Similar to `template_sweep.json` but the number of glomeruli used `n_sub` is fixed at the maximum value of 145. This was used for the `filt` sweeps provided, in which glomeruli were subsequently filtered for responsivity.
   
+
+LocalWords:  Ackels Jupyter CentOS stims Hzanti corr Hzcorr JSON filt
+LocalWords:  responsivity inputXYZ csv config lars outputXYZ SLURM py
+LocalWords:  AB EF json SVM glom
