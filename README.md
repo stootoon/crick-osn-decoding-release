@@ -5,7 +5,7 @@ The code was written and tested using Python 3.8, Jupyter Notebook 6.0.3 on Cent
 # Setup
 To install the code and data,
 1. Download the code repository and unpack at your desired **installation root**.
-2. Download the data from [this](https://www.dropbox.com/s/pncq56d4evnx7v4/crick-osn-model-release-data.tar.gz?dl=0) link (~250 MB).
+2. Download the data from [this](https://www.dropbox.com/s/kv7949pyt5ik1i3/crick-osn-decoding-release-data.tar.gz?dl=0) link (~250 MB).
 3. Unpack the data file to yield a `data` folder.
 4. Move this folder into the **installation root**. It should now sit at the same level as the `README.md` file.
 
