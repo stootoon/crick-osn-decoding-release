@@ -1,5 +1,5 @@
 # Overview
-This repository contains code to produce **Extended Data panels 8k,l** of *Ackels et al. (under review)*, and additional related panels that were not included in the paper. The panels show the performance of a variety of classifiers when decoding whether the two odours presented were fluctuating in a correlated or anti-correlated way.
+This repository contains code to produce **Extended Data panels 8k,l** of [Ackels et al. 2021](https://www.nature.com/articles/s41586-021-03514-2), and additional related panels that were not included in the paper. The panels show the performance of a variety of classifiers when decoding whether the two odours presented were fluctuating in a correlated or anti-correlated way.
 
 The code was written and tested using Python 3.8, Jupyter Notebook 6.0.3 on CentOS Linux 7.6.1810.
 # Setup
