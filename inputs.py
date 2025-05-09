@@ -7,7 +7,7 @@ import pandas as pd
 import pathlib
 import pickle
 import logging
-
+import pdb
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("inputs.py")
 
@@ -120,7 +120,7 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     
     data  = np.load(data_file, allow_pickle = True).item()
     X, dt, experiments, stims, all_pairs = [data.get(f) for f in ["X", "dt", "experiments", "stims", "pairs"]]
-
+    
     logger.debug(f"Generating input for {config}")
     np.random.seed(config.seed)
 
@@ -128,6 +128,7 @@ def generate_input_for_config(config, data_file = os.path.join(data_dir, "data.p
     logger.debug(f"Using {pairs=}.")
 
     Xrgt = vstack([X[config.freq][stim,pair][whisker_slice[config.whiskers]] for stim in stims[config.freq] for pair in pairs])
+    pdb.set_trace()
     n_reps, n_glom, n_time = Xrgt.shape
     n_whisker = (lambda x: x.stop - x.start)(whisker_slice[config.whiskers])
 
